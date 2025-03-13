@@ -18,7 +18,12 @@ type
         self_test = "W" #Do self test of battery store in X
         res_self_test = "X"  #Result of selftest
         batt_level = "f" #Battery level %
-        
+        reg1 = "~" #Register 1
+        reg2 = "'" #Register 2
+        reg3 = "8" #Register 3
+
+
+
 type
     Ups* = object
         ip_adress*: string
