@@ -1,5 +1,6 @@
 import modbusutil,mbdevice,ups_lib
-import std/[tables,streams,marshal,parsecfg,strutils]
+import std/[tables,streams,marshal,parsecfg,strutils,asyncnet,asyncdispatch]
+import taskpools
 
 var
     file_json_ups:string = "ups_cfg.json"
@@ -20,3 +21,8 @@ load(strm,ups_devices)
 for x in countup(0,len(ups_devices)-1):
     ups_devices[x].tags = {"bat_v": ["NA","B"], "int_t": ["NA","C"], "freq_l": ["NA","F"], "in_v": ["NA","L"], "in_max_v": ["NA","M"], "in_min_v": ["NA","N"], "out_v":["NA","O"] , "pow_l":["NA","P"], "bat_l": ["NA","f"], "flag_s": ["NA","Q"], "reg1": ["NA","~"], "reg2": ["NA","'"], "reg3": ["NA","8"]}.toTable()
 #echo ups_devices
+
+
+proc mb_task() =
+    asyncCheck run_srv_asynch(p_mb_srv,modbus_server_port)
+    runForever()
