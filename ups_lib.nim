@@ -1,4 +1,11 @@
-import std/[strformat,net]
+import std/[strformat,net,tables,os]
+
+
+var
+    tag_tables* = initTable[string,array[2, string]]()
+
+
+tag_tables = {"bat_v": ["NA","B"], "int_t": ["NA","C"], "freq_l": ["NA","F"], "in_v": ["NA","L"], "in_max_v": ["NA","M"], "in_min_v": ["NA","N"], "out_v":["NA","O"] , "pow_l":["NA","P"], "bat_l": ["NA","f"], "flag_s": ["NA","Q"], "reg1": ["NA","~"], "reg2": ["NA","'"], "reg3": ["NA","8"]}.toTable()
 
 type
     Ups_cmd* = enum
@@ -26,15 +33,14 @@ type
 
 type
     Ups* = object
-        ip_adress*: string
+        ip_adress*:string
+        port*:int
         name*:string
         model*:string = "APC smart unknown"
-        bat_voltage*:float
-        int_temp*:float
-        line_freq*:float
-        input_voltage*:float
-        output_voltage*:float
-        power_load*:float
+        cycle_time*:int
+        enabled*:bool
+        tags* = initTable[string,array[2, string]]()
+
 
 
 
@@ -54,5 +60,12 @@ proc lowUpsRequest*(cmd:string,ip:string,port:int): string =
     except:
         result = "NA_request_error"
 
-        
+proc fillUpsTable*(upstable:var Table, ip:string, port:int) =
+    var
+        ups_answer:string
+    for name_par,tag in upstable:
+        ups_answer = lowUpsRequest(tag[1],ip,port)
+        upstable[name_par] = [ups_answer,tag[1]]
+        sleep(100)
+
 

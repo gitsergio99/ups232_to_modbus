@@ -1,0 +1,10 @@
+[
+    {
+        "ip_adress" : "10.39.225.52",
+        "port" : 4001,
+        "name" : "Test Ups",
+        "model" : "Smart UPS 620 SC",
+        "cycle_time" : 60000,
+        "enabled" : true
+    }
+]
