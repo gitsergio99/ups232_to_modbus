@@ -1,5 +1,6 @@
 [
     {
+        "index" : 0,
         "ip_adress" : "10.39.225.52",
         "port" : 4001,
         "name" : "Test Ups",
