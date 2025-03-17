@@ -54,6 +54,7 @@ proc ups_task(mb: ptr, ups:ptr) =
     while run_ups:
         if ups[].enabled:
             read_ups_write_modbus(mb,ups)
+            #echo ups[].ups_str()
         sleep(ups[].cycle_time)
 
 proc main_task() =

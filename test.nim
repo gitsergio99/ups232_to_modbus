@@ -21,11 +21,10 @@ tab = {"bat_v": ["NA","B","0"], "int_t": ["NA","C","1"], "freq_l": ["NA","F","2"
 #echo lowUpsRequest("~","10.39.225.52",4001)
 
 fillUpsTable(tab,"10.39.225.52",4001)
-for x in tab.values:
+for x,y in tab.pairs:
     echo x
 #dev.tags = {"bat_v": ["NA","B"], "int_t": ["NA","C"], "freq_l": ["NA","F"], "in_v": ["NA","L"], "in_max_v": ["NA","M"], "in_min_v": ["NA","N"], "out_v":["NA","O"] , "pow_l":["NA","P"], "bat_l": ["NA","f"], "flag_s": ["NA","Q"], "reg1": ["NA","~"], "reg2": ["NA","'"], "reg3": ["NA","8"]}.toTable()
 #let strm: FileStream = newFileStream("test.json", fmWrite)
 #store(strm,dev)
-
 
 #echo dev

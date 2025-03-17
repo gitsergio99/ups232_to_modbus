@@ -44,6 +44,13 @@ type
 
 
 
+proc ups_str*(self: Ups): string =
+    var
+        temp_str = "Current state of "
+    temp_str.add(fmt"{self.name} is :{'\n'}")
+    for x,y in self.tags:
+        temp_str.add(fmt"{x}:{y[0]}{'\n'}")
+    return temp_str
 
 
 proc lowUpsRequest*(cmd:string,ip:string,port:int): string =
