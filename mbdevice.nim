@@ -355,7 +355,7 @@ proc run_srv_asynch* (plc:ptr,port:int,ip_adr="") {.async.} =
     log_device(plc[].logging,srv_log,lvlInfo,"Async TPC ModBus device is started")
     var server = newAsyncSocket()
     server.setSockOpt(OptReuseAddr, true)
-    server.bindAddr(Port(502))
+    server.bindAddr(Port(port))
     server.listen()
     while true:
         let client = await server.accept()
