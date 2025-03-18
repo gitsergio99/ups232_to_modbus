@@ -1,5 +1,5 @@
 import modbusutil,mbdevice,ups_lib
-import std/[tables,streams,marshal,parsecfg,strutils,asyncnet,asyncdispatch, net,sequtils, os]
+import std/[tables,streams,marshal,parsecfg,strutils,asyncnet,asyncdispatch,net,sequtils,os,logging,times,strformat]
 import taskpools
 
 var
@@ -11,7 +11,10 @@ var
     mb_srv: ModBus_Device
     ups_devices_ptr:seq[ptr[Ups]] = @[]
     run_ups:bool = true
-
+    tmp_str: string = now().format("yyyy'_'MM'_'dd'_'HH'_'mm'_'ss'.log'")
+    ups_log_name: string = fmt"ups_log_{tmp_str}"
+    ups_logg = newFileLogger(ups_log_name,levelThreshold=lvlAll,fmtStr="[$datetime] - $levelname:")
+    ups_log_ptr: ptr[FileLogger] = ups_logg.addr
 #Init ModbusServer
 mb_srv.initModBus_Device("Modbus UPS server",true,uint8(1),false, @[[0,65536]], @[[0,100]], @[[0,100]],@[[0,100]])
 var pointer_mb_srv:ptr[ModBus_Device] = mb_srv.addr
@@ -27,12 +30,13 @@ for x in countup(0,len(ups_devices)-1):
     ups_devices_ptr.add(ups_devices[x].addr)
 #echo ups_devices
 
-proc read_ups_write_modbus(mb:ptr, ups:ptr) =
+proc read_ups_write_modbus(mb:ptr, ups:ptr, lg: ptr) =
     var
         mb_base: int = 100
         temp_str: string = "0"
         res:bool
     fillUpsTable(ups[].tags,ups[].ip_adress,ups[].port)
+    lg[].log(lvlInfo,ups[].ups_str)
     for x in ups[].tags.values:
         if (x[0] == "NA") or (x[0]=="NA_request_error"):
             temp_str = "0"
@@ -50,10 +54,10 @@ proc mb_task() =
     asyncCheck run_srv_asynch(pointer_mb_srv,modbus_server_port)
     runForever()
 
-proc ups_task(mb: ptr, ups:ptr) =
+proc ups_task(mb: ptr, ups:ptr, lg:ptr) =
     while run_ups:
         if ups[].enabled:
-            read_ups_write_modbus(mb,ups)
+            read_ups_write_modbus(mb,ups, lg)
             #echo ups[].ups_str()
         sleep(ups[].cycle_time)
 
@@ -63,9 +67,9 @@ proc main_task() =
         tp = Taskpool.new(num_threads = 4)
     spawn(tp,mb_task())
     for y in ups_devices_ptr:
-        spawn(tp,ups_task(pointer_mb_srv,y))
+        spawn(tp,ups_task(pointer_mb_srv,y,ups_log_ptr))
     while true:
-        discard
+        sleep(1000)
 main_task()
 
 
