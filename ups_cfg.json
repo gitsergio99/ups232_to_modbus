@@ -10,7 +10,7 @@
     },
     {
         "index" : 1,
-        "ip_adress" : "10.39.225.53",
+        "ip_adress" : "10.39.225.70",
         "port" : 4001,
         "name" : "Test Ups 2",
         "model" : "Smart UPS 720 SC",
@@ -19,7 +19,7 @@
     },
     {
         "index" : 2,
-        "ip_adress" : "10.39.225.54",
+        "ip_adress" : "10.39.225.90",
         "port" : 4001,
         "name" : "Test Ups 3",
         "model" : "Smart UPS 620 SC",

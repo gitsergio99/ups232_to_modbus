@@ -63,17 +63,20 @@ proc lowUpsRequest*(cmd:string,ip:string,port:int): string =
     try:
         sock.connect(ip,Port(port))
         res = sock.send(cmd_pointer,len(cmd))
-        result = sock.recvLine(2000)
+        result = sock.recvLine(timeout = 200)
         sock.close()
     except:
+        sock.close()
         result = "NA_request_error"
 
 proc fillUpsTable*(upstable:var Table, ip:string, port:int) =
     var
         ups_answer:string
+    #echo fmt"IP is {ip} and port is {port}"
     for name_par,tag in upstable:
         ups_answer = lowUpsRequest(tag[1],ip,port)
         upstable[name_par] = [ups_answer,tag[1],tag[2]]
         sleep(100)
+    #echo upstable
 
 

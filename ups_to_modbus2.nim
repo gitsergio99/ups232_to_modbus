@@ -32,7 +32,7 @@ for x in countup(0,len(ups_devices)-1):
 ups_seq_ptr = ups_devices_ptr.addr
 #echo ups_devices
 
-proc main_http(upss:ptr):string =
+proc forming_resp(upss:ptr, id_n:int):string =
     var
         n:int = 0
         temp_str: string = """<html>
@@ -49,29 +49,75 @@ proc main_http(upss:ptr):string =
         <caption>UPS</caption>
         <tr>
         <th>Name</th>
-        <th>Value</th>
-        <th>Alarm Up</th>
-        <th>Alarm Down</th>
-        <th>Warnning Up</th>
-        <th>Warning Down</th>
-        <th>Alarm Up State</th>
-        <th>Alarm Down State</th>
-        <th>Warnning Up State</th>
-        <th>Warning Down State</th>
-        <th>Alarm Enabled</th>
+        <th>Model</th>
+        <th>Batt V</th>
+        <th>Internal T</th>
+        <th>Line Freq</th>
+        <th>In V</th>
+        <th>In V max</th>
+        <th>In V min</th>
+        <th>Out V</th>
+        <th>Power</th>
+        <th>Batt Level</th>
+        <th>Flags</th>
+        <th>Register 1</th>
+        <th>Register 2</th>
+        <th>Register 3</th>
         </tr>
         """]#
-    temp_str.add("""
-    <form action="main2.html" method="post">
-    <Select id="sel1" name="UPS">""")
+    temp_str.add(fmt"""
+    <form action="" method="POST">
+    <Select id="sel1" value="{intToStr(id_n)}" name="UPS">""")
     for x in upss[]:
-        temp_str.add(fmt"""<option value="{n}">{x[].name}</option>""")
+        temp_str.add(fmt"""<option {(if n == id_n: "selected" else: "")} value="{n}">{x[].name}</option>""")
         n = n + 1
     temp_str.add("""
     </Select>
-    <input id="2" type="text" name="e_date" size="23" maxlength="23" value="2">
     <input type="submit" value="Отправить">
-    </form>
+    </form>""")
+    temp_str.add("""
+        <table border="1">
+        <caption>UPS</caption>
+        <tr>
+        <th>Name</th>
+        <th>Model</th>
+        <th>IP</th>
+        <th>Batt V</th>
+        <th>Internal T</th>
+        <th>Line Freq</th>
+        <th>In V</th>
+        <th>In V max</th>
+        <th>In V min</th>
+        <th>Out V</th>
+        <th>Power</th>
+        <th>Batt Level</th>
+        <th>Flags</th>
+        <th>Register 1</th>
+        <th>Register 2</th>
+        <th>Register 3</th>
+        </tr>
+        """)
+    temp_str.add(fmt"""  
+    <tr>
+    <td>{upss[][id_n].name}</td>
+    <td>{upss[][id_n].model}</td>
+    <td>{upss[][id_n].ip_adress}</td>
+    <td>{upss[][id_n].tags["bat_v"][0]}</td>
+    <td>{upss[][id_n].tags["int_t"][0]}</td>
+    <td>{upss[][id_n].tags["freq_l"][0]}</td>
+    <td>{upss[][id_n].tags["in_v"][0]}</td>
+    <td>{upss[][id_n].tags["in_max_v"][0]}</td>
+    <td>{upss[][id_n].tags["in_min_v"][0]}</td>
+    <td>{upss[][id_n].tags["out_v"][0]}</td>
+    <td>{upss[][id_n].tags["pow_l"][0]}</td>
+    <td>{upss[][id_n].tags["bat_l"][0]}</td>
+    <td>{upss[][id_n].tags["flag_s"][0]}</td>
+    <td>{upss[][id_n].tags["reg1"][0]}</td>
+    <td>{upss[][id_n].tags["reg2"][0]}</td>
+    <td>{upss[][id_n].tags["reg3"][0]}</td>
+    """
+    )
+    temp_str.add("""
     </body>
     </html>
     """)
@@ -83,13 +129,17 @@ proc main_http(upss:ptr):string =
 proc main_http(upss:ptr, h_port:int) {.async.} =
     var http_server = newAsyncHttpServer()
     var txt:string = "ok"
-
+    
     proc handler_http(req: Request) {.async.} =
-        echo req.url.path
-        if req.url.path[0] == '/':
-            txt = main_http(upss)
-        #echo txt
-        await req.respond(Http200,txt)
+        var id_ups:int
+        if len(req.url.path) == 1:
+            try:
+                id_ups = parseInt(req.body.split("=")[1])
+            except:
+                id_ups = 0
+            txt = forming_resp(upss,id_ups)
+            #echo txt
+            await req.respond(Http200,txt)
     
     waitFor http_server.serve(Port(h_port),handler_http)
 
@@ -103,6 +153,7 @@ proc read_ups_write_modbus(mb:ptr, ups:ptr, lg: ptr) =
         mb_base: int = 100
         temp_str: string = "0"
         res:bool
+    
     fillUpsTable(ups[].tags,ups[].ip_adress,ups[].port)
     lg[].log(lvlInfo,ups[].ups_str)
     for x in ups[].tags.values:
@@ -118,7 +169,7 @@ proc read_ups_write_modbus(mb:ptr, ups:ptr, lg: ptr) =
 
 
 proc mb_task() =
-    echo modbus_server_port
+    #echo modbus_server_port
     asyncCheck run_srv_asynch(pointer_mb_srv,modbus_server_port)
     runForever()
 
@@ -126,17 +177,17 @@ proc ups_task(mb: ptr, ups:ptr, lg:ptr) =
     while run_ups:
         if ups[].enabled:
             read_ups_write_modbus(mb,ups, lg)
-            #echo ups[].ups_str()
         sleep(ups[].cycle_time)
 
 proc main_task() =
     var
         #ntreads = countProcessors()
-        tp = Taskpool.new(num_threads = 8)
+        tp = Taskpool.new(num_threads = 10)
     spawn(tp,mb_task())
     spawn(tp,http_task())
     for y in ups_devices_ptr:
         spawn(tp,ups_task(pointer_mb_srv,y,ups_log_ptr))
+        sleep(10000)
     while true:
         sleep(1000)
 main_task()
