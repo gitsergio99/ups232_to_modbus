@@ -44,27 +44,6 @@ proc forming_resp(upss:ptr, id_n:int):string =
         <H2>Состояние Ups.</H2>
         <br>
         """
-        #["""
-        <table border="1">
-        <caption>UPS</caption>
-        <tr>
-        <th>Name</th>
-        <th>Model</th>
-        <th>Batt V</th>
-        <th>Internal T</th>
-        <th>Line Freq</th>
-        <th>In V</th>
-        <th>In V max</th>
-        <th>In V min</th>
-        <th>Out V</th>
-        <th>Power</th>
-        <th>Batt Level</th>
-        <th>Flags</th>
-        <th>Register 1</th>
-        <th>Register 2</th>
-        <th>Register 3</th>
-        </tr>
-        """]#
     temp_str.add(fmt"""
     <form action="" method="POST">
     <Select id="sel1" value="{intToStr(id_n)}" name="UPS">""")
