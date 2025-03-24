@@ -40,7 +40,6 @@ proc forming_resp(upss:ptr, id_n:int):string =
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <title>APC UPS RS232 to ModBus TCP server.</title>
         </head>
-        <body>
         <H2>Состояние Ups.</H2>
         <br>
         """
@@ -90,12 +89,72 @@ proc forming_resp(upss:ptr, id_n:int):string =
     <td>{upss[][id_n].tags["out_v"][0]}</td>
     <td>{upss[][id_n].tags["pow_l"][0]}</td>
     <td>{upss[][id_n].tags["bat_l"][0]}</td>
-    <td>{upss[][id_n].tags["flag_s"][0]}</td>
-    <td>{upss[][id_n].tags["reg1"][0]}</td>
-    <td>{upss[][id_n].tags["reg2"][0]}</td>
-    <td>{upss[][id_n].tags["reg3"][0]}</td>
+    <td>{num_to_bits(upss[][id_n].tags["flag_s"][0])}</td>
+    <td>{num_to_bits(upss[][id_n].tags["reg1"][0])}</td>
+    <td>{num_to_bits(upss[][id_n].tags["reg2"][0])}</td>
+    <td>{num_to_bits(upss[][id_n].tags["reg3"][0])}</td>
+    </tr>
+    </table>
     """
     )
+    temp_str.add(""" </table>
+        <table border="1">
+    <caption>Bits understanding</caption>
+    <tr>
+    <th>Flags</th>
+    <th>Register 1</th>
+    <th>Register 2</th>
+    <th>Register 3</th>
+    </tr>
+        <tr>
+    <td>0: Runtime calibration occuring</td>
+    <td>0: In wake up mode</td>
+    <td>0: Fan failure in electronic, UPS in bypass</td>
+    <td>0: Output unpowered due to shutdown by low battery</td>
+    </tr>
+    <tr>
+    <td>1: SmartTrim</td>
+    <td>1: In bypass mode due to internal fault</td>
+    <td>1: Fan failure in isolation unit</td>
+    <td>1: Unable to transfer to battery due to overload</td>
+    </tr>
+    <tr>
+    <td>2: SmartBoost</td>
+    <td>2: Going to bypass mode due to command</td>
+    <td>2: Bypass supply failure</td>
+    <td>2: Main relay malfunction - UPS turned off</td>
+    </tr>
+    <tr>
+    <td>3: On line</td>
+    <td>3: In bypass mode due command</td>
+    <td>3: Output voltage select failure, UPS in bypass</td>
+    <td>3: In sleep mode from</td>
+    </tr>
+    <tr>
+    <td>4: On battary</td>
+    <td>4: Returning from bypass mode</td>
+    <td>4: DC imbalance, UPS in bypass</td>
+    <td>4: In shutdown mode from S</td>
+    </tr>
+    <tr>
+    <td>5: Overloaded output</td>
+    <td>5: In bypass mode due to manual bypass control</td>
+    <td>5: Command sent to stop bypass with no battery connected - UPS still in bypass</td>
+    <td>5: Battery charger failure</td>
+    </tr>
+    <tr>
+    <td>6: Battary Low</td>
+    <td>6: Ready to power load on user command</td>
+    <td>6: Realy fault in SmartTrim or SmartBoost</td>
+    <td>6: Bypass relay malfunction</td>
+    </tr>
+    <tr>
+    <td>7: Replace battary</td>
+    <td>7: Ready to power load on user command or return of line power</td>
+    <td>7: Bad output voltage</td>
+    <td>7: Normal operating temperature exceeded</td>
+    </tr>
+    </table>""")
     temp_str.add("""
     </body>
     </html>

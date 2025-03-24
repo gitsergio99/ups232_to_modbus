@@ -1,4 +1,4 @@
-import std/[strformat,net,tables,os]
+import std/[strformat,net,tables,os,typetraits,sequtils,strutils]
 
 
 var
@@ -68,6 +68,21 @@ proc lowUpsRequest*(cmd:string,ip:string,port:int): string =
     except:
         sock.close()
         result = "NA_request_error"
+
+proc num_to_bits* (val: any): string =
+    when val.type.name == "int":
+        result = fmt"{val:#b}"
+    elif val.type.name == "float":
+        result = fmt"{cast[uint32](val):#b}"
+    elif val.type.name == "string":
+        if val.allIt(it.isDigit()):
+            result = fmt"{parseInt(val):#b}"
+        else:
+            result = val
+    else:
+        result = "none"
+
+
 
 proc fillUpsTable*(upstable:var Table, ip:string, port:int) =
     var
