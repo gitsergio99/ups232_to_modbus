@@ -35,6 +35,7 @@ ups_seq_ptr = ups_devices_ptr.addr
 proc forming_resp(upss:ptr, id_n:int):string =
     var
         n:int = 0
+        flg,reg1,reg2,reg3:string = "0"
         temp_str: string = """<html>
         <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -75,6 +76,7 @@ proc forming_resp(upss:ptr, id_n:int):string =
         <th>Register 3</th>
         </tr>
         """)
+    
     temp_str.add(fmt"""  
     <tr>
     <td>{upss[][id_n].name}</td>
@@ -97,7 +99,11 @@ proc forming_resp(upss:ptr, id_n:int):string =
     </table>
     """
     )
-    temp_str.add(""" </table>
+    flg = upss[][id_n].tags["flag_s"][0]
+    reg1 = upss[][id_n].tags["reg1"][0]
+    reg2 = upss[][id_n].tags["reg2"][0]
+    reg3 = upss[][id_n].tags["reg3"][0]
+    temp_str.add(fmt""" </table>
         <table border="1">
     <caption>Bits understanding</caption>
     <tr>
@@ -107,52 +113,52 @@ proc forming_resp(upss:ptr, id_n:int):string =
     <th>Register 3</th>
     </tr>
         <tr>
-    <td>0: Runtime calibration occuring</td>
-    <td>0: In wake up mode</td>
-    <td>0: Fan failure in electronic, UPS in bypass</td>
-    <td>0: Output unpowered due to shutdown by low battery</td>
+    <td bgcolor="{test_bit_set_color(flg,0,"yellow")}">0: Runtime calibration occuring</td>
+    <td bgcolor="{test_bit_set_color(reg1,0,"yellow")}">0: In wake up mode</td>
+    <td bgcolor="{test_bit_set_color(reg2,0,"red")}">0: Fan failure in electronic, UPS in bypass</td>
+    <td bgcolor="{test_bit_set_color(reg3,0,"red")}">0: Output unpowered due to shutdown by low battery</td>
     </tr>
     <tr>
-    <td>1: SmartTrim</td>
-    <td>1: In bypass mode due to internal fault</td>
-    <td>1: Fan failure in isolation unit</td>
-    <td>1: Unable to transfer to battery due to overload</td>
+    <td bgcolor="{test_bit_set_color(flg,1,"yellow")}">1: SmartTrim</td>
+    <td bgcolor="{test_bit_set_color(reg1,1,"red")}">1: In bypass mode due to internal fault</td>
+    <td bgcolor="{test_bit_set_color(reg2,1,"red")}">1: Fan failure in isolation unit</td>
+    <td bgcolor="{test_bit_set_color(reg3,1,"red")}">1: Unable to transfer to battery due to overload</td>
     </tr>
     <tr>
-    <td>2: SmartBoost</td>
-    <td>2: Going to bypass mode due to command</td>
-    <td>2: Bypass supply failure</td>
-    <td>2: Main relay malfunction - UPS turned off</td>
+    <td bgcolor="{test_bit_set_color(flg,2,"yellow")}">2: SmartBoost</td>
+    <td bgcolor="{test_bit_set_color(reg1,2,"yellow")}">2: Going to bypass mode due to command</td>
+    <td bgcolor="{test_bit_set_color(reg2,2,"red")}">2: Bypass supply failure</td>
+    <td bgcolor="{test_bit_set_color(reg3,2,"red")}">2: Main relay malfunction - UPS turned off</td>
     </tr>
     <tr>
-    <td>3: On line</td>
-    <td>3: In bypass mode due command</td>
-    <td>3: Output voltage select failure, UPS in bypass</td>
-    <td>3: In sleep mode from</td>
+    <td bgcolor="{test_bit_set_color(flg,3,"green")}">3: On line</td>
+    <td bgcolor="{test_bit_set_color(reg1,3,"yellow")}">3: In bypass mode due command</td>
+    <td bgcolor="{test_bit_set_color(reg2,3,"red")}">3: Output voltage select failure, UPS in bypass</td>
+    <td bgcolor="{test_bit_set_color(reg3,3,"yellow")}">3: In sleep mode from</td>
     </tr>
     <tr>
-    <td>4: On battary</td>
-    <td>4: Returning from bypass mode</td>
-    <td>4: DC imbalance, UPS in bypass</td>
-    <td>4: In shutdown mode from S</td>
+    <td bgcolor="{test_bit_set_color(flg,4,"red")}">4: On battary</td>
+    <td bgcolor="{test_bit_set_color(reg1,4,"yellow")}">4: Returning from bypass mode</td>
+    <td bgcolor="{test_bit_set_color(reg2,4,"red")}">4: DC imbalance, UPS in bypass</td>
+    <td bgcolor="{test_bit_set_color(reg3,4,"yellow")}">4: In shutdown mode from S</td>
     </tr>
     <tr>
-    <td>5: Overloaded output</td>
-    <td>5: In bypass mode due to manual bypass control</td>
-    <td>5: Command sent to stop bypass with no battery connected - UPS still in bypass</td>
-    <td>5: Battery charger failure</td>
+    <td bgcolor="{test_bit_set_color(flg,5,"red")}">5: Overloaded output</td>
+    <td bgcolor="{test_bit_set_color(reg1,5,"yellow")}">5: In bypass mode due to manual bypass control</td>
+    <td bgcolor="{test_bit_set_color(reg2,5,"red")}">5: Command sent to stop bypass with no battery connected - UPS still in bypass</td>
+    <td bgcolor="{test_bit_set_color(reg3,5,"red")}">5: Battery charger failure</td>
     </tr>
     <tr>
-    <td>6: Battary Low</td>
-    <td>6: Ready to power load on user command</td>
-    <td>6: Realy fault in SmartTrim or SmartBoost</td>
-    <td>6: Bypass relay malfunction</td>
+    <td bgcolor="{test_bit_set_color(flg,6,"red")}">6: Battary Low</td>
+    <td bgcolor="{test_bit_set_color(reg1,6,"yellow")}">6: Ready to power load on user command</td>
+    <td bgcolor="{test_bit_set_color(reg2,6,"red")}">6: Realy fault in SmartTrim or SmartBoost</td>
+    <td bgcolor="{test_bit_set_color(reg3,6,"red")}">6: Bypass relay malfunction</td>
     </tr>
     <tr>
-    <td>7: Replace battary</td>
-    <td>7: Ready to power load on user command or return of line power</td>
-    <td>7: Bad output voltage</td>
-    <td>7: Normal operating temperature exceeded</td>
+    <td bgcolor="{test_bit_set_color(flg,7,"red")}">7: Replace battary</td>
+    <td bgcolor="{test_bit_set_color(reg1,7,"yellow")}">7: Ready to power load on user command or return of line power</td>
+    <td bgcolor="{test_bit_set_color(reg2,7,"red")}">7: Bad output voltage</td>
+    <td bgcolor="{test_bit_set_color(reg3,7,"red")}">7: Normal operating temperature exceeded</td>
     </tr>
     </table>""")
     temp_str.add("""
@@ -195,7 +201,7 @@ proc read_ups_write_modbus(mb:ptr, ups:ptr, lg: ptr) =
     fillUpsTable(ups[].tags,ups[].ip_adress,ups[].port)
     lg[].log(lvlInfo,ups[].ups_str)
     for x in ups[].tags.values:
-        if (x[0] == "NA") or (x[0]=="NA_request_error"):
+        if not x[0].allIt(it.isDigit()):
             temp_str = "0"
         else:
             temp_str = x[0]

@@ -38,7 +38,7 @@ proc read_ups_write_modbus(mb:ptr, ups:ptr, lg: ptr) =
     fillUpsTable(ups[].tags,ups[].ip_adress,ups[].port)
     lg[].log(lvlInfo,ups[].ups_str)
     for x in ups[].tags.values:
-        if (x[0] == "NA") or (x[0]=="NA_request_error"):
+        if not x[0].allIt(it.isDigit()):
             temp_str = "0"
         else:
             temp_str = x[0]

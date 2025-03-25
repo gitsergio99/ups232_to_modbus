@@ -21,6 +21,7 @@ var
     tab = initTable[string,array[3, string]]()
     dev: Ups
     val: float = 43.3
+    val_s = "08"
 
 #echo val.type.name
 #if val.allIt(it.isDigit()):

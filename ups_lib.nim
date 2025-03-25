@@ -1,4 +1,4 @@
-import std/[strformat,net,tables,os,typetraits,sequtils,strutils]
+import std/[strformat,net,tables,os,typetraits,sequtils,strutils,bitops]
 
 
 var
@@ -52,6 +52,20 @@ proc ups_str*(self: Ups): string =
         temp_str.add(fmt"{x}:{y[0]}{'\n'}")
     return temp_str
 
+proc test_bit_set_color*(val:string,bit_indx:int,color:string):string =
+    var
+        default_color:string = "white"
+        int_val: uint8
+    try:
+        int_val = uint8(parseInt(val))
+    except:
+        int_val = 0
+    if int_val.testBit(bit_indx):
+        result = color
+    else:
+        result = default_color
+
+
 
 proc lowUpsRequest*(cmd:string,ip:string,port:int): string =
     var
@@ -87,6 +101,10 @@ proc num_to_bits* (val: any): string =
 proc fillUpsTable*(upstable:var Table, ip:string, port:int) =
     var
         ups_answer:string
+        strarting_command: string = "YY"
+        temp_str:string
+    temp_str = lowUpsRequest(strarting_command,ip,port)
+    sleep(100)
     #echo fmt"IP is {ip} and port is {port}"
     for name_par,tag in upstable:
         ups_answer = lowUpsRequest(tag[1],ip,port)
