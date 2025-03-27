@@ -63,8 +63,8 @@ proc ups_task(mb: ptr, ups:ptr, lg:ptr) =
 
 proc main_task() =
     var
-        #ntreads = countProcessors()
-        tp = Taskpool.new(num_threads = 8)
+        n_treads: int = len(ups_devices) + 4
+        tp = Taskpool.new(num_threads = n_treads)
     spawn(tp,mb_task())
     for y in ups_devices_ptr:
         spawn(tp,ups_task(pointer_mb_srv,y,ups_log_ptr))

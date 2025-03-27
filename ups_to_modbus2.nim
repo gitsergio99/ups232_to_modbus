@@ -244,7 +244,8 @@ proc ups_task(mb: ptr, ups:ptr, lg:ptr) =
 proc main_task() =
     var
         #ntreads = countProcessors()
-        tp = Taskpool.new(num_threads = 10)
+        n_treads: int = len(ups_devices) + 4
+        tp = Taskpool.new(num_threads = n_treads)
     spawn(tp,mb_task())
     spawn(tp,http_task())
     for y in ups_devices_ptr:
