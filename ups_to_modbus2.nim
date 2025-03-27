@@ -96,6 +96,24 @@ proc forming_resp(upss:ptr, id_n:int):string =
     <td>{num_to_bits(upss[][id_n].tags["reg2"][0])}</td>
     <td>{num_to_bits(upss[][id_n].tags["reg3"][0])}</td>
     </tr>
+    <tr>
+    <td>ModBus TCP</td>
+    <td>Holding registers</td>
+    <td>adresses</td>
+    <td>{(100+(100*upss[][id_n].index)+parseInt(upss[][id_n].tags["bat_v"][2]))}</td> 
+    <td>{(100+(100*upss[][id_n].index)+parseInt(upss[][id_n].tags["int_t"][2]))}</td>
+    <td>{(100+(100*upss[][id_n].index)+parseInt(upss[][id_n].tags["freq_l"][2]))}</td>
+    <td>{(100+(100*upss[][id_n].index)+parseInt(upss[][id_n].tags["in_v"][2]))}</td>
+    <td>{(100+(100*upss[][id_n].index)+parseInt(upss[][id_n].tags["in_max_v"][2]))}</td>
+    <td>{(100+(100*upss[][id_n].index)+parseInt(upss[][id_n].tags["in_min_v"][2]))}</td>
+    <td>{(100+(100*upss[][id_n].index)+parseInt(upss[][id_n].tags["out_v"][2]))}</td>
+    <td>{(100+(100*upss[][id_n].index)+parseInt(upss[][id_n].tags["pow_l"][2]))}</td>
+    <td>{(100+(100*upss[][id_n].index)+parseInt(upss[][id_n].tags["bat_l"][2]))}</td>
+    <td>{(100+(100*upss[][id_n].index)+parseInt(upss[][id_n].tags["flag_s"][2]))}</td>
+    <td>{(100+(100*upss[][id_n].index)+parseInt(upss[][id_n].tags["reg1"][2]))}</td>
+    <td>{(100+(100*upss[][id_n].index)+parseInt(upss[][id_n].tags["reg2"][2]))}</td>
+    <td>{(100+(100*upss[][id_n].index)+parseInt(upss[][id_n].tags["reg3"][2]))}</td>
+    </tr>
     </table>
     """
     )
