@@ -43,7 +43,7 @@ type
         tags* = initTable[string,array[3, string]]()
 
 
-
+# View current state of USP object in terminal
 proc ups_str*(self: Ups): string =
     var
         temp_str = "Current state of "
@@ -52,6 +52,7 @@ proc ups_str*(self: Ups): string =
         temp_str.add(fmt"{x}:{y[0]}{'\n'}")
     return temp_str
 
+# return color if bit in value true or white if false. for html
 proc test_bit_set_color*(val:string,bit_indx:int,color:string):string =
     var
         default_color:string = "white"
@@ -66,7 +67,7 @@ proc test_bit_set_color*(val:string,bit_indx:int,color:string):string =
         result = default_color
 
 
-
+#Request to Smart USP RS232 via rs232/tcp server like moxa nport
 proc lowUpsRequest*(cmd:string,ip:string,port:int): string =
     var
         cmd_pointer: pointer
@@ -83,6 +84,8 @@ proc lowUpsRequest*(cmd:string,ip:string,port:int): string =
         sock.close()
         result = "NA_request_error"
 
+
+# represent value in string bit array
 proc num_to_bits* (val: any): string =
     when val.type.name == "int":
         result = fmt"{val:#b}"
@@ -97,7 +100,7 @@ proc num_to_bits* (val: any): string =
         result = "none"
 
 
-
+# Get's data from rs232 Smart Ups via tcp
 proc fillUpsTable*(upstable:var Table, ip:string, port:int) =
     var
         ups_answer:string
