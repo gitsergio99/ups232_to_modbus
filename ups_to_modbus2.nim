@@ -179,6 +179,7 @@ proc forming_resp(upss:ptr, id_n:int):string =
     <td bgcolor="{test_bit_set_color(reg3,7,"red")}">7: Normal operating temperature exceeded</td>
     </tr>
     </table>""")
+    temp_str.add(fmt"""<h5>ModBus TCP server port is {modbus_server_port}.</h5>""")
     temp_str.add("""
     </body>
     </html>
